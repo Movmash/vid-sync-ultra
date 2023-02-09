@@ -110,7 +110,7 @@ class Socket {
   };
 }    
 Socket.socket = {}
-Socket.serverOrigin = "https://7e50-49-37-66-19.in.ngrok.io"
+Socket.serverOrigin = "https://6caf-49-37-66-19.in.ngrok.io"
 
 class SyncVideo {
   static init(){
@@ -132,6 +132,15 @@ class SyncVideo {
       this.syncVideoTo(data.videoState);
     })  
 
+    socket.on("onplaynext", data => {
+      if (host) return;
+      this.syncVideoTo(data.videoState)
+    })
+
+    socket.on("onplayprevious", data => {
+      if (host) return;
+      this.syncVideoTo(data.videoState)
+    })
     socket.on("syncwithhost", () => {
       if (!host) return;
       this.updateState();
@@ -145,6 +154,7 @@ class SyncVideo {
       this.hostVideoState["paused"] = data.hostVideoState["paused"];
       this.hostVideoState["currentTime"] = data.hostVideoState["currentTime"];
       this.hostVideoState["playbackRate"] = data.hostVideoState["playbackRate"];
+      this.hostVideoState["playIndex"] = data.hostVideoState["playIndex"]
       this.syncVideoTo(this.hostVideoState);
     });  
 
@@ -155,6 +165,7 @@ class SyncVideo {
     this.videoState["paused"] = video.paused;
     this.videoState["currentTime"] = video.currentTime;
     this.videoState["playbackRate"] = video.playbackRate;
+    this.videoState["playIndex"] = FileManager.playIndex;
     return this.videoState;
   }  
 
@@ -162,14 +173,19 @@ class SyncVideo {
     this.hostVideoState["paused"] = video.paused;
     this.hostVideoState["currentTime"] = video.currentTime;
     this.hostVideoState["playbackRate"] = video.playbackRate;
+    this.hostVideoState["playIndex"] = FileManager.playIndex;
     return this.hostVideoState;
   }  
 
   static syncVideoTo(srcState) {
     console.log("syncing...");
+    console.log(srcState, this.videoState)
+    if(FileManager.playIndex !== srcState["playIndex"]){
+      Player.selectVideo(srcState["playIndex"])
+    }
     video.currentTime = srcState["currentTime"];
     video.playbackRate = srcState["playbackRate"];
-    if (!srcState["paused"]) video.play();
+    if (!srcState["paused"]) Player.play();
     else video.pause();
     this.updateState();
     this.updateHostState();
@@ -198,10 +214,9 @@ class SyncVideo {
       return socket.emit("syncwithhost", { roomId });
   };    
 
-  //....
-
   static onplay = () => {
-    const {host, roomId} = RoomManager.roomInfo
+    const {host, roomId, isJoined} = RoomManager.roomInfo
+    if(!isJoined) return
     const {socket} = Socket
     const {videoState} = this
     if (!host) {
@@ -213,7 +228,8 @@ class SyncVideo {
   };  
 
   static onpause = () => {
-    const { host, roomId } = RoomManager.roomInfo
+    const { host, roomId, isJoined } = RoomManager.roomInfo
+    if (!isJoined) return
     const { socket } = Socket
     const { videoState } = this
     if (!host) {
@@ -236,7 +252,30 @@ class SyncVideo {
     this.updateState();
     socket.emit("onseeked", { roomId, videoState });
   }
-    
+  
+  static onplaynext = () => {
+    const { host, roomId } = RoomManager.roomInfo
+    const { socket } = Socket
+    const { videoState } = this
+    if (!host) {
+      this.syncVideoWithHost();
+      return;
+    } 
+    this.updateState()
+    socket.emit("onplaynext", { roomId, videoState });
+  }
+
+  static onplayprevious = () => {
+    const { host, roomId } = RoomManager.roomInfo
+    const { socket } = Socket
+    const { videoState } = this
+    if (!host) {
+      this.syncVideoWithHost();
+      return;
+    } 
+    this.updateState();
+    socket.emit("onplayprevious", { roomId, videoState });
+  }
 
 }  
 
@@ -246,4 +285,5 @@ SyncVideo.videoState = {
   paused: video.paused,
   currentTime: video.currentTime,
   playbackRate: video.playbackRate,
+  playIndex: 0
 };

@@ -146,11 +146,21 @@ class Player {
   }
   static playNext() {
     let a = FileManager.getNextFile(!0);
+    a && SyncVideo.onplaynext();
     return a ? (Player.loadFile(a), !0) : !1;
   }
   static playPrevious() {
     let a = FileManager.getNextFile(!1);
+    a && SyncVideo.onplayprevious()
     return a ? (Player.loadFile(a), !0) : !1;
+  }
+  static selectVideo(a) {
+    let f = FileManager.getFileByIndex(a);
+    document.title = f.name;
+    Player.objectURL && URL.revokeObjectURL(Player.objectURL);
+    Player.objectURL = URL.createObjectURL(f);
+    video.src = Player.objectURL; 
+    Controls.onVideoChange();
   }
   static togglePlay() {
     video.paused || video.ended ? Player.play() : video.pause();
@@ -512,6 +522,9 @@ class FileManager {
     a.preventDefault();
     FileManager.dragEnd();
     FileManager.updateFileList(a.dataTransfer.files);
+  }
+  static getFileByIndex(a) {
+    return ((FileManager.playIndex = a), fileList[a])
   }
 }
 class WindowManager {
