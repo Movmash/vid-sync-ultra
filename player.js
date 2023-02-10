@@ -752,5 +752,6 @@ async function init() {
   FileManager.init();
   WindowManager.init();
   RoomManager.init();
+  OriginManager.init();
 }
 init();

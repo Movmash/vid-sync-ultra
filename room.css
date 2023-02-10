@@ -29,9 +29,10 @@
 
 .header {
     padding: 10px;
+    position: relative;
 }
 
-.header > input {
+.header > input, #originInput {
     width: 100%;
     background-color: lightgray;
     border:0;
@@ -96,7 +97,7 @@
     border: 0;
     padding: 10px;
 }
-#leave {
+#leave , #connect{
     width: 100%;
     border: 0;
     padding: 10px;
@@ -132,4 +133,15 @@
     width: 20%;
     outline: 0;
     border: 0;
+}
+
+#originSelection {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-color: white;
+    top: 0; 
+    padding: 10px;
+    left: 0;
+    z-index: 1;
 }

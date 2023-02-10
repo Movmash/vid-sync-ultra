@@ -12,6 +12,9 @@ const sendMessageBtn = document.getElementById("send")
 const messageList = document.getElementById("chatList")
 const buttonList = document.getElementById("buttonList")
 const leaveButton = document.getElementById("leave")
+const originSelectionPanel = document.getElementById("originSelection")
+const originInput = document.getElementById("originInput")
+const originConnectBtn = document.getElementById("connect")
 const popupWindow = !0,
   video = document.getElementById("video"),
   playerPanel = document.getElementById("player");
@@ -93,7 +96,7 @@ RoomManager.roomInfo = {
   roomId : "",
   host: false,
   isJoined: false,
-  name: Math.floor(Math.random() * 10000).toString(),
+  name: generateRandomName(),
 }
 RoomManager.toggle = false
 
@@ -108,7 +111,7 @@ class Socket {
   }  
 }    
 Socket.socket = {}
-Socket.serverOrigin = "https://6caf-49-37-66-19.in.ngrok.io"
+Socket.serverOrigin = ""
 
 class SyncVideo {
   static init(){
@@ -190,8 +193,9 @@ class SyncVideo {
   };  
 
   static syncVideoWithHost() {
-    const { host, roomId } = RoomManager.roomInfo;
+    const { host, roomId, isJoined } = RoomManager.roomInfo;
     const {socket} = Socket
+    if(Object.keys(socket).length === 0) return
     if (host) return;
     this.updateState();
     console.log("sync with host");
@@ -299,7 +303,7 @@ class UIManager {
 class ChatManager {
   static init(){
     const {socket} = Socket
-    const joinMessage = `user joined ${RoomManager.roomInfo.name}`
+    const joinMessage = `${RoomManager.roomInfo.name} joined`
     const welcomeMessage = "Welcome to this room"
     this.addMessageToList({message: welcomeMessage, ...RoomManager.roomInfo})
     socket.emit("notify", {message: joinMessage, ...RoomManager.roomInfo})
@@ -310,6 +314,9 @@ class ChatManager {
     socket.on("chatmessage", (data) => {
       this.addMessageToList(data);
     })
+
+    messageInput.removeAttribute("disabled")
+    sendMessageBtn.removeAttribute("disabled")
 
     sendMessageBtn.addEventListener("click",() => this.onSendMessage())
     messageInput.addEventListener("keypress", (e) => {
@@ -333,5 +340,21 @@ class ChatManager {
     const messageData = { message, name, host, roomId } 
     this.addMessageToList(messageData)
     socket.emit("chatmessage", messageData);
+  }
+}
+
+class OriginManager {
+  static init(){
+    originInput.defaultValue = "https://6caf-49-37-66-19.in.ngrok.io"
+    originConnectBtn.addEventListener("click", () => this.onConnect())
+  }
+  
+  static onConnect() {
+    const originLink = originInput.value.trim()
+    if(originLink !== "") {
+      Socket.serverOrigin = originLink
+      originSelectionPanel.classList.add("invisible")
+    }
+      
   }
 }

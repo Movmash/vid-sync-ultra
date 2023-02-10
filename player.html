@@ -84,6 +84,10 @@
           <button id="join">Join</button>
         </div>
         <button id="leave" class="invisible">Leave</button>
+        <div id="originSelection">
+          <input id="originInput" type="text">
+          <button id="connect">Connect</button>
+        </div>
       </div>
       <div class="activitySelector">
         <button id="chatMenu">Chat</button>
@@ -93,8 +97,8 @@
         <main id="chat">
           <div id="chatList"></div>
           <div id="chatBottom">
-            <input id="messageInput" type="text">
-            <button id="send">send</button>
+            <input id="messageInput" disabled type="text">
+            <button id="send" disabled>send</button>
           </div>
         </main>
         <main id="filelist">
@@ -107,6 +111,7 @@
   <div class="d-none">
     <input type="file" id="file" accept="video/*,audio/*,.mp4,.mp3,.mkv,.webm,.3gp,.avi,.mpeg,.mpg,.ogg,.wmv,.wav,.mov" multiple>
   </div>  
+  <script type="text/javascript" src="./superhero.js" ></script>
   <script type="text/javascript" src="./lib/socket.io.min.js" ></script>
   <script type="text/javascript" src="room.js"></script>
   <script type="text/javascript" src="player.js"></script>
