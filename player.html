@@ -79,17 +79,24 @@
 
       <div class="header">
         <input id="text" type="text">
-        <div class="buttons">
+        <div id="buttonList" class="buttons">
           <button id="create">Create</button>
           <button id="join">Join</button>
         </div>
+        <button id="leave" class="invisible">Leave</button>
       </div>
       <div class="activitySelector">
         <button id="chatMenu">Chat</button>
         <button id="fileMenu">Files</button>
       </div>
       <div class="activity">
-        <main id="chat"></main>
+        <main id="chat">
+          <div id="chatList"></div>
+          <div id="chatBottom">
+            <input id="messageInput" type="text">
+            <button id="send">send</button>
+          </div>
+        </main>
         <main id="filelist">
         </main>
       </div>

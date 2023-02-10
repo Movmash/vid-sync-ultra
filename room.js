@@ -7,7 +7,11 @@ const filePanel = document.getElementById("filelist")
 const createBtn = document.getElementById("create")
 const joinBtn = document.getElementById("join")
 const textFeild = document.getElementById("text");
-
+const messageInput = document.getElementById("messageInput")
+const sendMessageBtn = document.getElementById("send")
+const messageList = document.getElementById("chatList")
+const buttonList = document.getElementById("buttonList")
+const leaveButton = document.getElementById("leave")
 const popupWindow = !0,
   video = document.getElementById("video"),
   playerPanel = document.getElementById("player");
@@ -16,10 +20,12 @@ const popupWindow = !0,
 class RoomManager {
   static init() {
 
-    slideButton.addEventListener("click", RoomManager.onClickSlide)
-
-    chatMenuBtn.addEventListener("click", () => RoomManager.onClickMenu("chat"));
-    fileMenuBtn.addEventListener("click", () => RoomManager.onClickMenu("file"));
+    slideButton.addEventListener("click",() => this.onClickSlide())
+    createBtn.addEventListener("click", () => this.onEnterRoom(true));
+    joinBtn.addEventListener("click", () => this.onEnterRoom(false))
+    chatMenuBtn.addEventListener("click", () => this.onClickMenu("chat"));
+    fileMenuBtn.addEventListener("click", () => this.onClickMenu("file"));
+    leaveButton.addEventListener("click", () => this.onLeaveRoom())
   }
   static updateRoomFile(files) {
     filePanel.innerHTML = ""
@@ -30,7 +36,32 @@ class RoomManager {
       filePanel.appendChild(newFileMenu);
     });
   }
-  
+
+  static onEnterRoom(host = false) {
+    Socket.init();
+    const { socket } = Socket
+    const textInput = textFeild.value
+    if (textInput !== "") {
+      RoomManager.roomInfo.roomId = textInput;
+      RoomManager.roomInfo.host = host;
+      RoomManager.roomInfo.isJoined = true;
+      socket.emit("joinroom", RoomManager.roomInfo);
+      SyncVideo.init()
+      ChatManager.init();
+      UIManager.changeUIOnJoin();
+    }
+  }
+
+  static onLeaveRoom() {
+    const { socket } = Socket;
+    const {roomInfo} = this
+    roomInfo.host = false;
+    roomInfo.isJoined = false;
+    roomInfo.roomId = "";
+    socket.disconnect();
+    UIManager.changeUIOnleave();
+  };
+
   static onClickSlide() {
     if (!RoomManager.toggle) {
       roomPanel.classList.add("hide");
@@ -61,7 +92,8 @@ class RoomManager {
 RoomManager.roomInfo = {
   roomId : "",
   host: false,
-  isJoined: false
+  isJoined: false,
+  name: Math.floor(Math.random() * 10000).toString(),
 }
 RoomManager.toggle = false
 
@@ -72,42 +104,8 @@ class Socket {
     const socket = this.socket;
     socket.on("joinroom", (data) => {
       console.table(data)
-      console.log(`user joined with ${data}`);
     });
-    createBtn.addEventListener("click", this.createRoom);
-    joinBtn.addEventListener("click", this.joinRoom)
   }  
-  
-  static createRoom() {
-    const {socket} = Socket
-    const textInput = textFeild.value
-    if(textInput !== ""){
-      RoomManager.roomInfo.roomId = textInput;
-      RoomManager.roomInfo.host = true;
-      RoomManager.roomInfo.isJoined = true;
-      socket.emit("joinroom", RoomManager.roomInfo);
-      SyncVideo.init()
-    }
-  }
-  
-  static joinRoom() {
-    const { socket } = Socket
-    const textInput = textFeild.value
-    if(textInput !== ""){
-      RoomManager.roomInfo.roomId = textInput;
-      RoomManager.roomInfo.host = false;
-      RoomManager.roomInfo.isJoined = true;
-      socket.emit("joinroom", RoomManager.roomInfo);
-      SyncVideo.init()
-    }
-  }
-  static leaveRoom() {
-    const { socket } = this;
-    roomInfo.host = false;
-    roomInfo.isJoined = false;
-    roomInfo.roomId = "";
-    socket.disconnect();
-  };
 }    
 Socket.socket = {}
 Socket.serverOrigin = "https://6caf-49-37-66-19.in.ngrok.io"
@@ -287,3 +285,53 @@ SyncVideo.videoState = {
   playbackRate: video.playbackRate,
   playIndex: 0
 };
+
+class UIManager {
+  static changeUIOnJoin() {
+    buttonList.classList.add("invisible")
+    leaveButton.classList.remove("invisible")
+  }
+  static changeUIOnleave() {
+    buttonList.classList.remove("invisible")
+    leaveButton.classList.add("invisible")
+  }
+}
+class ChatManager {
+  static init(){
+    const {socket} = Socket
+    const joinMessage = `user joined ${RoomManager.roomInfo.name}`
+    const welcomeMessage = "Welcome to this room"
+    this.addMessageToList({message: welcomeMessage, ...RoomManager.roomInfo})
+    socket.emit("notify", {message: joinMessage, ...RoomManager.roomInfo})
+    socket.on("notify", data => {
+      console.log(data)
+      this.addMessageToList(data)
+    })
+    socket.on("chatmessage", (data) => {
+      this.addMessageToList(data);
+    })
+
+    sendMessageBtn.addEventListener("click",() => this.onSendMessage())
+    messageInput.addEventListener("keypress", (e) => {
+      if(e.key === "Enter"){
+        this.onSendMessage()
+      }
+    })
+  }
+  static addMessageToList(messageData) {
+    const div = document.createElement("div");
+    div.innerHTML = messageData.message;
+    messageList.appendChild(div)
+  }
+  static onSendMessage() {
+    const message = messageInput.value;
+    messageInput.value = ""
+    const {name, host, roomId} = RoomManager.roomInfo;
+    const {socket} = Socket
+    message.trim();
+    if(message === "") return;
+    const messageData = { message, name, host, roomId } 
+    this.addMessageToList(messageData)
+    socket.emit("chatmessage", messageData);
+  }
+}

@@ -752,6 +752,5 @@ async function init() {
   FileManager.init();
   WindowManager.init();
   RoomManager.init();
-  Socket.init();
 }
 init();
