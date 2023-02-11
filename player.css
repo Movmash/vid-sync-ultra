@@ -42,13 +42,20 @@ body {
   align-items: center;
   position: relative;
   transition: 250ms;
-  /* width: 100%; */
   height: 100vh;
   background-color: black;
   color: #FFFFFF;
+  transition: 250ms;
+}
+
+.player {
+  width: 80%;
+}
+.player.hide {
+  width: 100vw;
 }
 #video {
-  width: 100%;
+  /* width: 100%; */
   height: auto;
   max-height: 100%;
   margin: auto;

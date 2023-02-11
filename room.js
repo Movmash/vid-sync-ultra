@@ -15,6 +15,8 @@ const leaveButton = document.getElementById("leave")
 const originSelectionPanel = document.getElementById("originSelection")
 const originInput = document.getElementById("originInput")
 const originConnectBtn = document.getElementById("connect")
+const slideIcon = document.getElementById("slideIcon")
+const globalContainer = document.getElementById("container")
 const popupWindow = !0,
   video = document.getElementById("video"),
   playerPanel = document.getElementById("player");
@@ -69,9 +71,11 @@ class RoomManager {
     if (!RoomManager.toggle) {
       roomPanel.classList.add("hide");
       playerPanel.classList.add("hide");
+      slideIcon.src = "./img/leftIcon.svg"
     } else {
       roomPanel.classList.remove("hide");
       playerPanel.classList.remove("hide");
+      slideIcon.src = "./img/rightIcon.svg"
     }
     RoomManager.toggle = !RoomManager.toggle
   }
@@ -80,14 +84,14 @@ class RoomManager {
     if (option === "chat") {
       chatPanel.style.zIndex = 5;
       filePanel.style.zIndex = 0;
-      chatMenuBtn.style.background = "gray"
-      fileMenuBtn.style.background = "lightgray"
+      chatMenuBtn.classList.add("select");
+      fileMenuBtn.classList.remove("select");
 
     } else {
       chatPanel.style.zIndex = 0;
       filePanel.style.zIndex = 5;
-      fileMenuBtn.style.background = "gray"
-      chatMenuBtn.style.background = "lightgray"
+      fileMenuBtn.classList.add("select");
+      chatMenuBtn.classList.remove("select");
     }
   }
 
@@ -291,6 +295,39 @@ SyncVideo.videoState = {
 };
 
 class UIManager {
+  static init() {
+    var textarea = messageInput;
+    this.autoResize(textarea);
+    textarea.addEventListener('input',() => UIManager.autoResize(textarea));
+    textarea.addEventListener("click", () => UIManager.onClickTextArea());
+    textarea.addEventListener("blur", () => UIManager.onReleaseTextArea());
+    textarea.addEventListener("keydown", (e) => UIManager.onChangeLine(e))
+  }
+  static onChangeLine(e) {
+    if (e.shiftKey && e.keyCode === 13) {
+      var currentValue = messageInput.value;
+      messageInput.value = currentValue + "\n";
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      ChatManager.onSendMessage();
+    }
+  }
+  static onClickTextArea() {
+    if(!UIManager.isTextAreaTyping) {
+      document.body.removeEventListener("keydown", Controls.keyboardListener);
+    }
+  }
+  static onReleaseTextArea() {
+    if(!UIManager.isTextAreaTyping) {
+      document.body.addEventListener("keydown", Controls.keyboardListener);
+    }
+  }
+  static autoResize(textarea){
+    UIManager.isTextAreaTyping = true
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.min(textarea.scrollHeight, 100) + "px";
+    UIManager.isTextAreaTyping = false
+  }
   static changeUIOnJoin() {
     buttonList.classList.add("invisible")
     leaveButton.classList.remove("invisible")
@@ -299,7 +336,25 @@ class UIManager {
     buttonList.classList.remove("invisible")
     leaveButton.classList.add("invisible")
   }
+  static scrollToBottom() {
+    messageList.scrollTop = messageList.scrollHeight;
+  }
+  static buildMessageCard(messageData) {
+    const {message, name} = messageData
+    const isMine = RoomManager.roomInfo.name === name
+    const messageContainer = document.createElement("div")
+    const nameContainer = document.createElement("span")
+    const m = document.createElement("p")
+    m.innerHTML = message
+    nameContainer.innerHTML = name
+    messageContainer.appendChild(nameContainer)
+    messageContainer.appendChild(m)
+    messageContainer.id = "messageContainer"
+    messageContainer.classList.add(`${isMine? "mine" : "others"}`)
+    return messageContainer;
+  }
 }
+UIManager.isTextAreaTyping = false
 class ChatManager {
   static init(){
     const {socket} = Socket
@@ -319,16 +374,12 @@ class ChatManager {
     sendMessageBtn.removeAttribute("disabled")
 
     sendMessageBtn.addEventListener("click",() => this.onSendMessage())
-    messageInput.addEventListener("keypress", (e) => {
-      if(e.key === "Enter"){
-        this.onSendMessage()
-      }
-    })
+    
   }
   static addMessageToList(messageData) {
-    const div = document.createElement("div");
-    div.innerHTML = messageData.message;
-    messageList.appendChild(div)
+    const messageCard = UIManager.buildMessageCard(messageData)
+    messageList.appendChild(messageCard)
+    UIManager.scrollToBottom()
   }
   static onSendMessage() {
     const message = messageInput.value;

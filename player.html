@@ -75,7 +75,9 @@
       <div id="error-info" class="d-none"></div>
     </div>
     <div id="room" class="room">
-      <button id="slide" >slide</button>
+      <button id="slide">
+        <img id="slideIcon" src="./img/rightIcon.svg" alt="">
+      </button>
 
       <div class="header">
         <input id="text" type="text">
@@ -90,15 +92,24 @@
         </div>
       </div>
       <div class="activitySelector">
-        <button id="chatMenu">Chat</button>
-        <button id="fileMenu">Files</button>
+        <button id="chatMenu">
+          <img src="./img/messageIcon.svg" alt="">
+        </button>
+        <button id="fileMenu">
+          <img src="./img/movieIcon.svg" alt="">
+        </button>
+        <button id="fileMenu">
+          <img src="./img/captionIcon.svg" alt="">
+        </button>
       </div>
       <div class="activity">
         <main id="chat">
           <div id="chatList"></div>
           <div id="chatBottom">
-            <input id="messageInput" disabled type="text">
-            <button id="send" disabled>send</button>
+            <textarea id="messageInput" placeholder="Type a message..." disabled type="text"></textarea>
+            <button id="send" disabled>
+              <img src="./img/sendIcon.svg" alt="">
+            </button>
           </div>
         </main>
         <main id="filelist">
