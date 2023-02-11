@@ -17,6 +17,8 @@ const originInput = document.getElementById("originInput")
 const originConnectBtn = document.getElementById("connect")
 const slideIcon = document.getElementById("slideIcon")
 const globalContainer = document.getElementById("container")
+const captionPanel = document.getElementById("captionPanel")
+const captionBtn = document.getElementById("captionMenu");
 const popupWindow = !0,
   video = document.getElementById("video"),
   playerPanel = document.getElementById("player");
@@ -30,15 +32,14 @@ class RoomManager {
     joinBtn.addEventListener("click", () => this.onEnterRoom(false))
     chatMenuBtn.addEventListener("click", () => this.onClickMenu("chat"));
     fileMenuBtn.addEventListener("click", () => this.onClickMenu("file"));
+    captionBtn.addEventListener("click", () => this.onClickMenu("caption"))
     leaveButton.addEventListener("click", () => this.onLeaveRoom())
   }
   static updateRoomFile(files) {
     filePanel.innerHTML = ""
-    files.forEach(f => {
-      const newFileMenu = document.createElement("div")
-      newFileMenu.classList.add("file");
-      newFileMenu.innerHTML = f.name;
-      filePanel.appendChild(newFileMenu);
+    files.forEach((f,i) => {
+      const fileCard = UIManager.buildFileCard(f, i)
+      filePanel.appendChild(fileCard);
     });
   }
 
@@ -84,13 +85,25 @@ class RoomManager {
     if (option === "chat") {
       chatPanel.style.zIndex = 5;
       filePanel.style.zIndex = 0;
+      captionPanel.style.zIndex = 0;
       chatMenuBtn.classList.add("select");
       fileMenuBtn.classList.remove("select");
-
-    } else {
+      captionBtn.classList.remove("select")
+    } 
+    if (option === "file") {
       chatPanel.style.zIndex = 0;
       filePanel.style.zIndex = 5;
+      captionPanel.style.zIndex = 0;
       fileMenuBtn.classList.add("select");
+      chatMenuBtn.classList.remove("select");
+      captionBtn.classList.remove("select")
+    }
+    if (option === "caption") {
+      chatPanel.style.zIndex = 0;
+      filePanel.style.zIndex = 0;
+      captionPanel.style.zIndex = 5;
+      captionBtn.classList.add("select");
+      fileMenuBtn.classList.remove("select");
       chatMenuBtn.classList.remove("select");
     }
   }
@@ -353,6 +366,47 @@ class UIManager {
     messageContainer.classList.add(`${isMine? "mine" : "others"}`)
     return messageContainer;
   }
+  static buildFileCard(file, index) {
+    const newFileMenu = document.createElement("div")
+    const p = document.createElement("p")
+    p.innerHTML = file.name
+    const playButton = document.createElement("button")
+    const img = document.createElement("img")
+    img.src = "./img/playIcon.svg"
+    playButton.appendChild(img)
+    playButton.addEventListener("click", () => Player.selectVideoAndPlay(index))
+    p.addEventListener("animationend", function () {
+      p.style.transform = "translateX(" + newFileMenu.offsetWidth + "px)";
+    });
+
+    newFileMenu.id = "fileContainer";
+    newFileMenu.appendChild(p)
+    newFileMenu.appendChild(playButton)
+
+
+    return newFileMenu;
+  }
+
+  static buildCaptionCard(file, index) {
+    const captionFileContainer = document.createElement("div")
+    const p = document.createElement("p")
+    p.innerHTML = file.name
+    const addButton = document.createElement("button")
+    const img = document.createElement("img")
+    img.src = "./img/addIcon.svg"
+    addButton.appendChild(img)
+    addButton.addEventListener("click", () => CaptionManager.selectSubtitle(index))
+    p.addEventListener("animationend", function () {
+      p.style.transform = "translateX(" + captionFileContainer.offsetWidth + "px)";
+    });
+
+    captionFileContainer.id = "captionFileContainer";
+    captionFileContainer.appendChild(p)
+    captionFileContainer.appendChild(addButton)
+
+
+    return captionFileContainer;
+  }
 }
 UIManager.isTextAreaTyping = false
 class ChatManager {
@@ -409,3 +463,48 @@ class OriginManager {
       
   }
 }
+
+const captionInput = document.getElementById("captionInput")
+const captionList = document.getElementById("captionList")
+
+class CaptionManager {
+  static init() {
+    captionInput.addEventListener("change", () => CaptionManager.onChangeCaptionFile())
+    CaptionManager.reader.addEventListener("load", e => CaptionManager.onReaderLoad(e));
+  }
+  static onReaderLoad(e) {
+    const srtText = e.target.result;
+    const srtUrl = URL.createObjectURL(new Blob([srtText], { type: "text/srt" }));
+    const track = document.createElement("track");
+    track.kind = "subtitles";
+    track.label = "English";
+    track.srclang = "en";
+    track.default = true;
+    track.src = srtUrl;
+    video.appendChild(track);
+  }
+  static onChangeCaptionFile() {
+    CaptionManager.fileList = Array.from(captionInput.files)
+    const b = new Intl.Collator();
+    CaptionManager.fileList.sort((c, d) => b.compare(c.name, d.name));
+    
+    this.updateCaptionPanel(this.fileList);
+  }
+
+  static updateCaptionPanel(files) {
+    captionList.innerHTML = ""
+    files.forEach((f, i) => {
+      const captionCard = UIManager.buildCaptionCard(f, i)
+      captionList.appendChild(captionCard);
+    });
+  }
+
+  static selectSubtitle(index) {
+    console.log(index);
+    const file = CaptionManager.fileList[index]
+    CaptionManager.reader.readAsText(file)
+  }
+}
+
+CaptionManager.fileList = []
+CaptionManager.reader = new FileReader()

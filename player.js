@@ -155,12 +155,21 @@ class Player {
     return a ? (Player.loadFile(a), !0) : !1;
   }
   static selectVideo(a) {
+    if (a === FileManager.playIndex) return;
     let f = FileManager.getFileByIndex(a);
     document.title = f.name;
     Player.objectURL && URL.revokeObjectURL(Player.objectURL);
     Player.objectURL = URL.createObjectURL(f);
     video.src = Player.objectURL; 
     Controls.onVideoChange();
+  }
+  static selectVideoAndPlay(a) {
+    if(0 <= a && a < fileList.length) {
+      this.selectVideo(a);
+    }else {
+      this.selectVideo(0);
+    }
+    Player.play(); 
   }
   static togglePlay() {
     video.paused || video.ended ? Player.play() : video.pause();
@@ -756,5 +765,6 @@ async function init() {
   RoomManager.init();
   OriginManager.init();
   UIManager.init()
+  CaptionManager.init();
 }
 init();

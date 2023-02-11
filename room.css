@@ -118,14 +118,96 @@
     gap: 10px;
 }
 
-#filelist > .file {
-    background: lightgray;
-    width: 100%;
-    padding: 10px;
-    cursor: pointer;
-    overflow: hidden;
-}
 
+#fileContainer {
+    background: var(--room-hover);
+    color: white;
+    width: 100%;
+    padding: 10px 0 10px 10px;
+    display: flex;
+    justify-content: end;
+    overflow: hidden;
+    position: relative;
+}
+#fileContainer>p {
+    position: absolute;
+    white-space: nowrap;
+    margin: 0 50%;
+    animation: animate 10s ease-in-out infinite;;
+}
+#fileContainer> button{
+    border: 0;
+    background: 0;
+    outline: 0;
+    z-index: 1;
+    background: var(--room-hover);
+    height: 100%;
+    padding: 0 10px;
+}
+#fileContainer> button >img {
+    cursor: pointer;
+    width: 30px;
+}
+#captionFileContainer {
+     background: var(--room-hover);
+    color: white;
+    width: 100%;
+    padding: 10px 0 10px 10px;
+    display: flex;
+    justify-content: end;
+    overflow: hidden;
+    position: relative;
+}
+#captionFileContainer>p {
+    position: absolute;
+    white-space: nowrap;
+    margin: 0 50%;
+    animation: animate 10s ease-in-out infinite;
+}
+#captionFileContainer> button{
+    border: 0;
+    background: 0;
+    outline: 0;
+    z-index: 1;
+    background: var(--room-hover);
+    height: 100%;
+    padding: 0 10px;
+}
+#captionFileContainer> button >img {
+    cursor: pointer;
+    width: 30px;
+}
+#captionPanel {
+    top:0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background: var(--room-primary);
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+}
+#captionList {
+    height: 100%;
+    display: flex;
+    overflow-y: auto;
+    flex-direction: column;
+    gap: 10px;
+}
+#addCaption {
+    padding: 10px;
+}
+#selectCaption {
+    display: flex;
+    justify-content: end;
+}
+#selectCaption>img {
+    width: 40px;
+    cursor: pointer;
+}
+#captionInput {
+    display: none;
+}
 .buttons{
     display: flex;
     justify-content: space-between;
@@ -268,3 +350,22 @@
         width: 30%;
     }
   }
+
+
+@keyframes animate {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-50%);
+  }
+  50% {
+    transform: translateX(0);
+  }
+  75% {
+    transform: translateX(50%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
