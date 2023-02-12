@@ -312,7 +312,7 @@ class UIManager {
     var textarea = messageInput;
     this.autoResize(textarea);
     textarea.addEventListener('input',() => UIManager.autoResize(textarea));
-    textarea.addEventListener("click", () => UIManager.onClickTextArea());
+    textarea.addEventListener("focus", () => UIManager.onClickTextArea());
     textarea.addEventListener("blur", () => UIManager.onReleaseTextArea());
     textarea.addEventListener("keydown", (e) => UIManager.onChangeLine(e))
   }
@@ -444,6 +444,7 @@ class ChatManager {
     if(message === "") return;
     const messageData = { message, name, host, roomId } 
     this.addMessageToList(messageData)
+    messageInput.style.height = "fit-content"
     socket.emit("chatmessage", messageData);
   }
 }
