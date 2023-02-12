@@ -369,3 +369,17 @@
     transform: translateX(0%);
   }
 }
+
+
+::-webkit-scrollbar {
+  width: 0.3em;
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar-track {
+  background-color: var(--room-primary);
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--room-secondary);
+}
