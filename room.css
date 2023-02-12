@@ -65,6 +65,15 @@
     color: lightgray;
 
 }
+.header > input::placeholder {
+    color: lightgray;
+}
+#join,#create {
+    background-color: #fa823c30;
+    border: 1px solid var(--room-orange);
+    cursor: pointer;
+}
+
 .activitySelector {
     display: flex;
     justify-content: space-between;
