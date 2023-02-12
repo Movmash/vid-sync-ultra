@@ -352,11 +352,17 @@
 }
 
 @media (max-width: 1200px) {
-    #player {
+    .player {
         width: 70%;
     }
     .room{
         width: 30%;
+    }
+    .room.hide {
+        right: -30%;
+    }
+    .player.hide {
+        width: 100vw;
     }
   }
 
