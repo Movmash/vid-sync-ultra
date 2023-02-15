@@ -5,8 +5,8 @@ chrome.action.onClicked.addListener(function (b) {
       : chrome.windows.create({
           type: "popup",
           url: "player.html",
-          width: 852,
-          height: 508,
+          width: 1280,
+          height: 720,
         });
   });
 });
