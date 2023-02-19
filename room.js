@@ -451,7 +451,7 @@ class ChatManager {
 
 class OriginManager {
   static init(){
-    originInput.defaultValue = "https://6caf-49-37-66-19.in.ngrok.io"
+    originInput.defaultValue = "https://bb54-49-37-65-137.in.ngrok.io"
     originConnectBtn.addEventListener("click", () => this.onConnect())
   }
   
