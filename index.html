@@ -75,22 +75,53 @@
       <div id="error-info" class="d-none"></div>
     </div>
     <div id="room" class="room">
-      <button id="slide" >slide</button>
+      <button id="slide">
+        <img id="slideIcon" src="./img/rightIcon.svg" alt="">
+      </button>
 
       <div class="header">
-        <input id="text" type="text">
-        <div class="buttons">
+        <input id="text" placeholder="Enter room code" type="text">
+        <div id="buttonList" class="buttons">
           <button id="create">Create</button>
           <button id="join">Join</button>
         </div>
+        <button id="leave" class="invisible">Leave</button>
+        <div id="originSelection">
+          <input id="originInput" type="text">
+          <button id="connect">Connect</button>
+        </div>
       </div>
       <div class="activitySelector">
-        <button id="chatMenu">Chat</button>
-        <button id="fileMenu">Files</button>
+        <button id="chatMenu">
+          <img src="./img/messageIcon.svg" alt="">
+        </button>
+        <button id="fileMenu">
+          <img src="./img/movieIcon.svg" alt="">
+        </button>
+        <button id="captionMenu">
+          <img src="./img/captionIcon.svg" alt="">
+        </button>
       </div>
       <div class="activity">
-        <main id="chat"></main>
+        <main id="chat">
+          <div id="chatList"></div>
+          <div id="chatBottom">
+            <textarea id="messageInput" placeholder="Type a message..." disabled type="text"></textarea>
+            <button id="send" disabled>
+              <img src="./img/sendIcon.svg" alt="">
+            </button>
+          </div>
+        </main>
         <main id="filelist">
+        </main>
+        <main id="captionPanel">
+          <div id="captionList"></div>
+          <div id="addCaption">
+            <input id="captionInput" type="file" accept=".srt" multiple>
+            <label for="captionInput" id="selectCaption">
+              <img id="addIcon" src="./img/addIcon.svg" alt="">
+            </label>
+          </div>
         </main>
       </div>
       
@@ -100,6 +131,7 @@
   <div class="d-none">
     <input type="file" id="file" accept="video/*,audio/*,.mp4,.mp3,.mkv,.webm,.3gp,.avi,.mpeg,.mpg,.ogg,.wmv,.wav,.mov" multiple>
   </div>  
+  <script type="text/javascript" src="./superhero.js" ></script>
   <script type="text/javascript" src="./lib/socket.io.min.js" ></script>
   <script type="text/javascript" src="room.js"></script>
   <script type="text/javascript" src="player.js"></script>

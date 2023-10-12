@@ -1,6 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@700&display=swap');
+*{
+    font-family: 'Ubuntu', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+:root{
+    --room-primary: #242C2E;
+    --room-secondary: #364548;
+    --room-hover: #5A6C70;
+    --room-orange: #FA813C;
+    --room-green: #02C196;
+    --room-black: #161B1D;
+}
 #room {
     display: flex;
     flex-direction: column;
+    background: var(--room-primary);
 }
 .room {
     width: 20%;
@@ -13,15 +28,19 @@
 
 #slide {
     position: absolute;
-    top: 0;
-    left: -50px;
+    top: 15px;
+    background:0;
+    border:0;
+    outline: 0;
+    cursor: pointer;
+    left: -60px;
+
 }
-.player {
-    width: 85%;
+
+#slide > img {
+    width: 30px;
 }
-.player.hide {
-    width: 100vw;
-}
+
 .room.hide {
     right: -20%;
     position: absolute;
@@ -29,26 +48,56 @@
 
 .header {
     padding: 10px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: var(--room-primary);
 }
 
 .header > input {
     width: 100%;
     background-color: lightgray;
     border:0;
-    padding:10px
+    padding:10px;
+
+    background-color: var(--room-secondary);
+    color: lightgray;
 
 }
-.activitySelector {
-    display: flex;
-    justify-content: space-between;
+.header > input::placeholder {
+    color: lightgray;
 }
-.activitySelector > button {
-    width: 100%;
-    border: 0;
-    padding: 15px;
+#join,#create {
+    background-color: #fa823c30;
+    border: 1px solid var(--room-orange);
     cursor: pointer;
 }
 
+.activitySelector {
+    display: flex;
+    justify-content: space-between;
+    background-color: var(--room-secondary);
+    padding: 5px;
+    gap: 10px;
+    margin-top: 5px;
+}
+.activitySelector > button {
+    width: 100%;
+    background: transparent;
+    border: 0;
+    padding: 10px 0;
+    cursor: pointer;
+}
+.activitySelector > button >img {
+    width:20px;
+}
+.activitySelector > button.select {
+    background-color: var(--room-hover);
+}
+.activitySelector > button:hover {
+    background-color: var(--room-hover);
+}
 .activity {
     position: relative;
     height: 100%;
@@ -57,10 +106,12 @@
 #chat {
     z-index: 5;
     position: absolute;
+    display: flex;
+    flex-direction: column;
     width: 100%;
     height: 100%;
     top:0;
-    background-color: red;
+    background: var(--room-primary);
 }
 
 #filelist {
@@ -68,7 +119,7 @@
     width: 100%;
     height: 100%;
     position: absolute;
-    background-color: blue;
+    background: var(--room-primary);
     padding: 5px;
     overflow-y: auto;
     display: flex;
@@ -76,21 +127,274 @@
     gap: 10px;
 }
 
-#filelist > .file {
-    background: lightgray;
-    width: 100%;
-    padding: 10px;
-    cursor: pointer;
-    overflow: hidden;
-}
 
+#fileContainer {
+    background: var(--room-hover);
+    color: white;
+    width: 100%;
+    padding: 10px 0 10px 10px;
+    display: flex;
+    justify-content: end;
+    overflow: hidden;
+    position: relative;
+}
+#fileContainer>p {
+    position: absolute;
+    white-space: nowrap;
+    margin: 0 50%;
+    animation: animate 10s ease-in-out infinite;;
+}
+#fileContainer> button{
+    border: 0;
+    background: 0;
+    outline: 0;
+    z-index: 1;
+    background: var(--room-hover);
+    height: 100%;
+    padding: 0 10px;
+}
+#fileContainer> button >img {
+    cursor: pointer;
+    width: 30px;
+}
+#captionFileContainer {
+     background: var(--room-hover);
+    color: white;
+    width: 100%;
+    padding: 10px 0 10px 10px;
+    display: flex;
+    justify-content: end;
+    overflow: hidden;
+    position: relative;
+}
+#captionFileContainer>p {
+    position: absolute;
+    white-space: nowrap;
+    margin: 0 50%;
+    animation: animate 10s ease-in-out infinite;
+}
+#captionFileContainer> button{
+    border: 0;
+    background: 0;
+    outline: 0;
+    z-index: 1;
+    background: var(--room-hover);
+    height: 100%;
+    padding: 0 10px;
+}
+#captionFileContainer> button >img {
+    cursor: pointer;
+    width: 30px;
+}
+#captionPanel {
+    top:0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background: var(--room-primary);
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+}
+#captionList {
+    height: 100%;
+    display: flex;
+    overflow-y: auto;
+    flex-direction: column;
+    gap: 10px;
+}
+#addCaption {
+    padding: 10px;
+}
+#selectCaption {
+    display: flex;
+    justify-content: end;
+}
+#selectCaption>img {
+    width: 40px;
+    cursor: pointer;
+}
+#captionInput {
+    display: none;
+}
 .buttons{
     display: flex;
     justify-content: space-between;
+    gap: 10px;
 }
 
 .buttons> button {
     width: 100%;
     border: 0;
     padding: 10px;
+    color: white;
+    background-color: var(--room-orange);
+}
+#leave , #connect{
+    width: 100%;
+    border: 0;
+    padding: 10px;
+    color: white;
+    background: var(--room-orange);
+    cursor: pointer;
+}
+.invisible {
+    display: none !important;
+}
+#chatList {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+#chatBottom {
+    /* max-height: 300px; */
+    display: flex;
+    gap: 5px;
+    justify-content: space-between;
+    overflow-y: auto;
+    padding: 10px;
+    align-items: end;
+    background-color: var(--room-secondary);
+}
+
+#messageInput  {
+  background: transparent;    
+  resize: none;
+  overflow: hidden;
+  padding: 5px;
+  box-sizing: border-box;
+  width: 100%;
+  color: white;
+  border: none;
+  outline: none;
+  overflow-y: auto;
+  padding-top: 13px;
+}
+
+#messageInput [autoResize] {
+  line-height: 1.2;
+  min-height: 10px;
+  max-height: 300px;
+}
+
+#messageInput::-webkit-input-placeholder {
+   color: lightgray;
+}
+
+#messageInput::-moz-placeholder {
+   color: lightgray;
+}
+
+#messageInput:-ms-input-placeholder {
+   color: lightgray;
+}
+
+#messageInput:-moz-placeholder {
+   color: lightgray;
+}
+#send {
+    border-radius: 20px;
+    width: 80px;
+    height: 40px;
+    outline: 0;
+    border: 0;
+    background-color: var(--room-orange);
+}
+#send >img {
+    width: 20px;
+}
+#originSelection {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-color: var(--room-primary);
+    top: 0; 
+    padding: 10px;
+    left: 0;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+#originSelection>input { 
+    width: 100%;
+    background-color: lightgray;
+    border:0;
+    padding:10px;
+    background-color: var(--room-secondary);
+    color: lightgray;
+}
+
+#messageContainer {
+    padding: 15px 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    word-wrap: break-word;
+}
+
+#messageContainer>p {
+    color: rgb(228, 228, 228);
+}
+.mine {
+    background-color: var(--room-black);
+}
+.others {
+    background-color: var(--room-secondary);
+}
+.others>span {
+    color: var(--room-green);
+}
+.mine>span {
+    color: var(--room-orange);
+}
+
+@media (max-width: 1200px) {
+    .player {
+        width: 70%;
+    }
+    .room{
+        width: 30%;
+    }
+    .room.hide {
+        right: -30%;
+    }
+    .player.hide {
+        width: 100vw;
+    }
+  }
+
+
+@keyframes animate {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-50%);
+  }
+  50% {
+    transform: translateX(0);
+  }
+  75% {
+    transform: translateX(50%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+
+::-webkit-scrollbar {
+  width: 0.3em;
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar-track {
+  background-color: var(--room-primary);
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--room-secondary);
 }

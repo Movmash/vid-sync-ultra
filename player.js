@@ -8,8 +8,8 @@ function getFullscreenElement() {
     ? document.webkitFullscreenElement
     : document.fullscreenElement;
 }
-void 0 === playerPanel.requestFullscreen &&
-  (playerPanel.requestFullscreen = playerPanel.webkitRequestFullscreen);
+void 0 === globalContainer.requestFullscreen &&
+  (globalContainer.requestFullscreen = globalContainer.webkitRequestFullscreen);
 const info = document.getElementById("info"),
   errorInfo = document.getElementById("error-info"),
   ltInfo = document.getElementById("lt-info"),
@@ -155,12 +155,21 @@ class Player {
     return a ? (Player.loadFile(a), !0) : !1;
   }
   static selectVideo(a) {
+    if (a === FileManager.playIndex) return;
     let f = FileManager.getFileByIndex(a);
     document.title = f.name;
     Player.objectURL && URL.revokeObjectURL(Player.objectURL);
     Player.objectURL = URL.createObjectURL(f);
     video.src = Player.objectURL; 
     Controls.onVideoChange();
+  }
+  static selectVideoAndPlay(a) {
+    if(0 <= a && a < fileList.length) {
+      this.selectVideo(a);
+    }else {
+      this.selectVideo(0);
+    }
+    Player.play(); 
   }
   static togglePlay() {
     video.paused || video.ended ? Player.play() : video.pause();
@@ -377,11 +386,13 @@ class Controls {
     Controls.updateTime();
     controlsPanel.classList.remove("d-none");
     playerPanel.classList.remove("hide-cursor");
+    slideButton.classList.remove("d-none");
   }
   static hide() {
     Controls.hidden = !0;
     controlsPanel.classList.add("d-none");
     playerPanel.classList.add("hide-cursor");
+    slideButton.classList.add("d-none");
   }
   static async keyboardListener(a) {
     var b = a.target.tagName;
@@ -600,7 +611,7 @@ class WindowManager {
     document.pictureInPictureElement && (await document.exitPictureInPicture());
     getFullscreenElement()
       ? document.exitFullscreen()
-      : playerPanel.requestFullscreen();
+      : globalContainer.requestFullscreen();
   }
   static exitFullscreen() {
     getFullscreenElement() && document.exitFullscreen();
@@ -752,6 +763,8 @@ async function init() {
   FileManager.init();
   WindowManager.init();
   RoomManager.init();
-  Socket.init();
+  OriginManager.init();
+  UIManager.init()
+  CaptionManager.init();
 }
 init();
